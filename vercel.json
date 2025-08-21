@@ -1,4 +1,3 @@
 {
-  "crons": [ { "path": "/api/ai/daily-plan", "schedule": "0 5 * * *" } ],
-  "regions": ["bom1", "sin1", "iad1"]
+  "crons": [ { "path": "/api/ai/daily-plan", "schedule": "0 5 * * *" } ]
 }
