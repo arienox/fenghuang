@@ -28,6 +28,7 @@ export const tasks = pgTable('tasks', {
   minutes: integer('minutes').default(30),
   importance: integer('importance').default(2),
   urgency: integer('urgency').default(2),
+  lane: varchar('lane', { length: 16 }).default('next'),
   today: boolean('today').default(false),
   done: boolean('done').default(false),
   dueAt: timestamp('due_at'),
@@ -41,6 +42,7 @@ export const transactions = pgTable('transactions', {
   source: varchar('source', { length: 120 }).notNull(),
   kind: varchar('kind', { length: 16 }).notNull(), /* income|expense */
   amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
+  category: varchar('category', { length: 48 }),
   meta: jsonb('meta'),
   occurredAt: timestamp('occurred_at').defaultNow().notNull(),
 })
@@ -67,4 +69,36 @@ export const notes = pgTable('notes', {
   title: varchar('title', { length: 200 }).notNull(),
   content: text('content'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const taskDeps = pgTable('task_deps', {
+  id: serial('id').primaryKey(),
+  taskId: integer('task_id').notNull(),
+  dependsOn: integer('depends_on').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const okrs = pgTable('okrs', {
+  id: serial('id').primaryKey(),
+  userId: varchar('user_id', { length: 64 }),
+  title: varchar('title', { length: 200 }),
+  targetDate: timestamp('target_date'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const keyResults = pgTable('key_results', {
+  id: serial('id').primaryKey(),
+  okrId: integer('okr_id'),
+  name: varchar('name', { length: 200 }),
+  targetValue: numeric('target_value', { precision: 12, scale: 2 }),
+  currentValue: numeric('current_value', { precision: 12, scale: 2 }).default('0'),
+  unit: varchar('unit', { length: 24 }).default('count'),
+})
+
+export const webhookEvents = pgTable('webhook_events', {
+  id: serial('id').primaryKey(),
+  provider: varchar('provider', { length: 32 }),
+  eventId: varchar('event_id', { length: 128 }).unique(),
+  payload: jsonb('payload'),
+  receivedAt: timestamp('received_at').defaultNow().notNull(),
 })
